@@ -1,3 +1,4 @@
+"use strict";
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -7,13 +8,18 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import User from "../models/User.js";
-import { configureOpenAI } from "../config/openai-config.js";
-import OpenAI from 'openai';
-export const generateChatCompletion = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteChats = exports.sendChatsToUser = exports.generateChatCompletion = void 0;
+const User_js_1 = __importDefault(require("../models/User.js"));
+const openai_config_js_1 = require("../config/openai-config.js");
+const openai_1 = __importDefault(require("openai"));
+const generateChatCompletion = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     const { message } = req.body;
     try {
-        const user = yield User.findById(res.locals.jwtData.id);
+        const user = yield User_js_1.default.findById(res.locals.jwtData.id);
         if (!user)
             return res
                 .status(401)
@@ -25,8 +31,8 @@ export const generateChatCompletion = (req, res, next) => __awaiter(void 0, void
         }));
         chats.push({ content: message, role: "user" });
         // send all chats with new one to openAI API
-        const config = configureOpenAI();
-        const openai = new OpenAI({
+        const config = (0, openai_config_js_1.configureOpenAI)();
+        const openai = new openai_1.default({
             apiKey: process.env.OPEN_AI_SECRET,
             organization: process.env.OPENAI_ORGANIZATION_ID,
         });
@@ -44,10 +50,11 @@ export const generateChatCompletion = (req, res, next) => __awaiter(void 0, void
         return res.status(500).json({ message: "Something went wrong" });
     }
 });
-export const sendChatsToUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.generateChatCompletion = generateChatCompletion;
+const sendChatsToUser = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //user token check
-        const user = yield User.findById(res.locals.jwtData.id);
+        const user = yield User_js_1.default.findById(res.locals.jwtData.id);
         if (!user) {
             return res.status(401).send("User not registered OR Token malfunctioned");
         }
@@ -61,10 +68,11 @@ export const sendChatsToUser = (req, res, next) => __awaiter(void 0, void 0, voi
         return res.status(200).json({ message: "ERROR", cause: error.message });
     }
 });
-export const deleteChats = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
+exports.sendChatsToUser = sendChatsToUser;
+const deleteChats = (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         //user token check
-        const user = yield User.findById(res.locals.jwtData.id);
+        const user = yield User_js_1.default.findById(res.locals.jwtData.id);
         if (!user) {
             return res.status(401).send("User not registered OR Token malfunctioned");
         }
@@ -81,4 +89,4 @@ export const deleteChats = (req, res, next) => __awaiter(void 0, void 0, void 0,
         return res.status(200).json({ message: "ERROR", cause: error.message });
     }
 });
-//# sourceMappingURL=chat-controllers.js.map
+exports.deleteChats = deleteChats;

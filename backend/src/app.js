@@ -1,17 +1,12 @@
-import express from "express";
-import { config } from "dotenv";
-import morgan from "morgan";
-import appRouter from "./routes/index.js";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-config();
-const app = express();
-//middlewares
-app.use(cors({ origin: "http://localhost:5173", credentials: true }));
-app.use(express.json());
-app.use(cookieParser(process.env.COOKIE_SECRET));
-//remove it in production
-app.use(morgan("dev"));
-app.use("/api/v1", appRouter);
-export default app;
-//# sourceMappingURL=app.js.map
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+const express_1 = __importDefault(require("express"));
+const dotenv_1 = require("dotenv");
+(0, dotenv_1.config)();
+const app = (0, express_1.default)();
+// middlewares
+app.use(express_1.default.json());
+exports.default = app;

@@ -1,7 +1,15 @@
 import { connect, disconnect } from "mongoose";
+
+const mongodbUrl: string | undefined = process.env.MONGODB_URL;
+
 async function connectToDatabase() {
   try {
-    await connect(process.env.MONGODB_URL);
+    if (mongodbUrl) {
+      // 'mongodbUrl' is now guaranteed to be a string
+      await connect(mongodbUrl);
+    } else {
+      throw new Error("MONGODB_URL is not defined");
+    }
   } catch (error) {
     console.log(error);
     throw new Error("Could not Connect To MongoDB");
