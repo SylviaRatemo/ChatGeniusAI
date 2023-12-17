@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Router, Request, Response } from "express";
 import {
   getAllUsers,
   userLogin,
@@ -16,7 +16,7 @@ import { verifyToken } from "../utils/token-manager.js";
 const userRoutes = Router();
 
 // userRoutes.get("/", getAllUsers);
-userRoutes.get("/", (req, res) => {
+userRoutes.get("/", (req: Request, res: Response) => {
   res.status(200).json({ message: "Welcome to the API!" });
 });
 userRoutes.post("/signup", validate(signupValidator), userSignup);
