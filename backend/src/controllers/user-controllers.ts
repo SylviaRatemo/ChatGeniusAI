@@ -28,6 +28,7 @@ export const userSignup = async (
     //user signup
     const { name, email, password } = req.body;
     const existingUser = await User.findOne({ email });
+    // unauthorized
     if (existingUser) return res.status(401).send("User already registered");
     const hashedPassword = await hash(password, 10);
     const user = new User({ name, email, password: hashedPassword });
@@ -52,6 +53,7 @@ export const userSignup = async (
       signed: true,
     });
 
+    console.log(res);
     return res
       .status(201)
       .json({ message: "OK", name: user.name, email: user.email });

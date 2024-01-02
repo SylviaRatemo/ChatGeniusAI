@@ -18,8 +18,5 @@ chatRoutes.post(
 chatRoutes.get("/all-chats", verifyToken, sendChatsToUser);
 chatRoutes.delete("/delete", verifyToken, deleteChats);
 
-chatRoutes.get('*', (req, res) => {
-  res.send('Wow!');
-});
 
 export default chatRoutes;

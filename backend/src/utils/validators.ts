@@ -13,6 +13,7 @@ export const validate = (validations: ValidationChain[]) => {
     if (errors.isEmpty()) {
       return next();
     }
+    // unprocessable entity
     return res.status(422).json({ errors: errors.array() });
   };
 };

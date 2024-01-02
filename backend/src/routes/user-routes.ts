@@ -15,10 +15,8 @@ import { verifyToken } from "../utils/token-manager.js";
 
 const userRoutes = Router();
 
-// userRoutes.get("/", getAllUsers);
-userRoutes.get("/", (req: Request, res: Response) => {
-  res.status(200).json({ message: "Welcome to the API!" });
-});
+userRoutes.get("/", getAllUsers);
+
 userRoutes.post("/signup", validate(signupValidator), userSignup);
 userRoutes.post("/login", validate(loginValidator), userLogin);
 userRoutes.get("/auth-status", verifyToken, verifyUser);
