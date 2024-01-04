@@ -1,27 +1,27 @@
 import { Box } from "@mui/material";
 import React from "react";
-import TypingAnim from "../components/typer/TypingAnim";
 import Footer from "../components/footer/Footer";
 
 const Home = () => {
   return (
-    <Box width={"100%"} height={"100%"}>
+    <Box
+      display="flex"
+      flexDirection="column"
+      height="100vh" // Set the height to 100% of the viewport height
+    >
       <Box
         sx={{
+          flex: 1, // Make this container take up the available space
           display: "flex",
-          width: "100%",
           flexDirection: "column",
           alignItems: "center",
+          justifyContent: "center",
           mx: "auto",
-          mt: 3,
         }}
       >
-        <Box>
-          <TypingAnim />
-        </Box>
+
         <Box
           sx={{
-            width: "100%",
             display: "flex",
             flexDirection: { md: "row", xs: "column", sm: "column" },
             gap: 5,
