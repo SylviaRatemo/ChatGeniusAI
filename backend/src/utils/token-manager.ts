@@ -10,24 +10,18 @@ export const createToken = (id: string, email: string, expiresIn: string) => {
   return token;
 };
 
-export const verifyToken = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  const token = req.signedCookies[`${COOKIE_NAME}`];
-  if (!token || token.trim() === "") {
+export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+  const token = req.signedCookies[COOKIE_NAME];
+
+  if (!token || !token.trim()) {
     return res.status(401).json({ message: "Token Not Received" });
   }
-  return new Promise<void>((resolve, reject) => {
-    try {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-      res.locals.jwtData = decoded;
-      resolve();
-      return next();
-    } catch (error) {
-      reject((error as Error).message);
-      return res.status(401).json({ message: "Token Expired" });
-    }    
-  });
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
+    res.locals.jwtData = decoded;
+    return next();
+  } catch (error) {
+    return res.status(401).json({ message: "Token Expired" });
+  }
 };

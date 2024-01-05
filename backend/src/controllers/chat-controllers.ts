@@ -2,6 +2,7 @@ import { NextFunction, Request, Response } from "express";
 import User from "../models/User.js";
 import { configureOpenAI } from "../config/openai-config.js";
 import OpenAI from 'openai';
+import ChatCompletionRequestMessage from "openai";
 
 
 export const generateChatCompletion = async (
@@ -17,12 +18,17 @@ export const generateChatCompletion = async (
         .status(401)
         .json({ message: "User not registered OR Token malfunctioned" });
 
+    type ChatCompletionRequestMessage = {
+      role: string;
+      content: string;
+    }
     // grab chats of user
     const chats: { role: string; content: string }[] = user.chats.map(({ role, content }) => ({
       role,
       content,
-    }));
+    })) as ChatCompletionRequestMessage[];
     chats.push({ content: message, role: "user" });
+    user.chats.push({ content: message, role:"user" });
 
     // send all chats with new one to openAI API
     const config = configureOpenAI();
@@ -32,9 +38,9 @@ export const generateChatCompletion = async (
     });
 
     // get latest response
-    const chatResponse = await openai.completions.create({
-      model: "text-davinci-003",
-      prompt: chats.map(chat => `${chat.role}: ${chat.content}`).join("\n"),
+    const chatResponse = await openai.chat.completions.create({
+      messages: [{ role: "system", content: "You are a helpful assistant." }],
+      model: "gpt-3.5-turbo",
     });
 
     user.chats.push(chatResponse.choices[0]);

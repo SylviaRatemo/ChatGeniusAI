@@ -30,15 +30,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    // fetch if the user's cookies are valid then skip login
-    async function checkStatus() {
+  // fetch if the user's cookies are valid then skip login
+  async function checkStatus() {
+    try {
       const data = await checkAuthStatus();
       if (data) {
         setUser({ email: data.email, name: data.name });
         setIsLoggedIn(true);
       }
+    } catch (error) {
+      console.error("Error checking authentication status:", error);
+      // Handle the error, e.g., redirect to login page or show an error message
     }
-    checkStatus();
+  }
+
+  checkStatus();
   }, []);
   const login = async (email: string, password: string) => {
     const data = await loginUser(email, password);
