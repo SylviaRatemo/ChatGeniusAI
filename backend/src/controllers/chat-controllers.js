@@ -38,7 +38,7 @@ const generateChatCompletion = (req, res, next) => __awaiter(void 0, void 0, voi
         });
         // get latest response
         const chatResponse = yield openai.completions.create({
-            model: "text-davinci-003",
+            model: "gpt-4",
             prompt: chats.map(chat => `${chat.role}: ${chat.content}`).join("\n"),
         });
         user.chats.push(chatResponse.choices[0]);

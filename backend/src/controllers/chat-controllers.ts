@@ -1,9 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import User from "../models/User.js";
 import { configureOpenAI } from "../config/openai-config.js";
-import OpenAI from 'openai';
-import ChatCompletionRequestMessage from "openai";
-
+const OpenAI = require('openai').OpenAI;
 
 export const generateChatCompletion = async (
   req: Request,
@@ -15,35 +13,26 @@ export const generateChatCompletion = async (
     const user = await User.findById(res.locals.jwtData.id);
     if (!user)
       return res
-        .status(401)
+        .status(500)
         .json({ message: "User not registered OR Token malfunctioned" });
 
-    type ChatCompletionRequestMessage = {
-      role: string;
-      content: string;
-    }
     // grab chats of user
-    const chats: { role: string; content: string }[] = user.chats.map(({ role, content }) => ({
-      role,
-      content,
-    })) as ChatCompletionRequestMessage[];
+    const chats = user.chats.map(({ role, content }) => ({ role, content }));
     chats.push({ content: message, role: "user" });
-    user.chats.push({ content: message, role:"user" });
 
-    // send all chats with new one to openAI API
+    // send all chats with new one to OpenAI API
     const config = configureOpenAI();
-    const openai = new OpenAI({
-      apiKey: process.env.OPEN_AI_SECRET,
-      organization: process.env.OPENAI_ORGANIZATION_ID,
-    });
+    const openai = new OpenAI(config);
 
     // get latest response
-    const chatResponse = await openai.chat.completions.create({
-      messages: [{ role: "system", content: "You are a helpful assistant." }],
-      model: "gpt-3.5-turbo",
+    const chatResponse = await openai.ChatCompletion.create({
+      model: "gpt-4",
+      messages: chats,
     });
 
-    user.chats.push(chatResponse.choices[0]);
+    for (const responseMessage of chatResponse.Choices[0].messages) {
+      user.chats.push(responseMessage);
+    }
     await user.save();
     return res.status(200).json({ chats: user.chats });
   } catch (error) {
@@ -70,7 +59,7 @@ export const sendChatsToUser = async (
   } catch (error) {
     console.log(error);
     // Assuming 'error' is an instance of the Error class
-    return res.status(200).json({ message: "ERROR", cause: (error as Error).message });
+    return res.status(500).json({ message: "ERROR", cause: (error as Error).message });
 
   }
 };
