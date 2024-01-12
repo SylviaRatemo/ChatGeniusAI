@@ -18,7 +18,7 @@ const Login = () => {
       await auth?.login(email, password);
       toast.success("Signed In Successfully", { id: "login" });
     } catch (error) {
-      console.log(error);
+      //console.log(error);
       toast.error("Signing In Failed", { id: "login" });
     }
   };
@@ -26,7 +26,7 @@ const Login = () => {
     if (auth?.user) {
       return navigate("/chat");
     }
-  }, [auth]);
+  }, [auth, navigate]);
   return (
     <Box width={"100%"} height={"100%"} display="flex" flex={1}>
       <Box padding={8} 

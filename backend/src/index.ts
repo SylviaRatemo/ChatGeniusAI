@@ -16,10 +16,14 @@ const corsOptions = {
 const PORT = process.env.PORT || 5000;
 connectToDatabase()
 .then(() => {
-    app.listen(PORT, () => console.log("Server Open.. Project by Sylvia Ratemo"));
     app.use(cors(corsOptions));
     app.use(cookieParser(process.env.COOKIE_SECRET));
     app.use("/api/v1", appRouter);
+    app.use((req, res, next) => {
+      console.log(`Received ${req.method} request at ${req.url}`);
+      next();
+    });
+    app.listen(PORT, () => console.log("Server Open.. Project by Sylvia Ratemo"));
 })
 .catch((err) => console.log(err));
 

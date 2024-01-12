@@ -30,41 +30,58 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-  // fetch if the user's cookies are valid then skip login
-  async function checkStatus() {
+    async function checkStatus() {
+      try {
+        const data = await checkAuthStatus();
+        if (data) {
+          setUser({ email: data.email, name: data.name });
+          setIsLoggedIn(true);
+        }
+      } catch (error) {
+        console.error("Error checking authentication status:", error);
+        // Handle the error, e.g., redirect to login page or show an error message
+      }
+    }
+
+    checkStatus();
+  }, []);
+
+  const login = async (email: string, password: string) => {
     try {
-      const data = await checkAuthStatus();
+      const data = await loginUser(email, password);
       if (data) {
         setUser({ email: data.email, name: data.name });
         setIsLoggedIn(true);
       }
     } catch (error) {
-      console.error("Error checking authentication status:", error);
-      // Handle the error, e.g., redirect to login page or show an error message
+      console.error("Error during login:", error);
+      // Handle login error, e.g., display an error message
     }
-  }
+  };
 
-  checkStatus();
-  }, []);
-  const login = async (email: string, password: string) => {
-    const data = await loginUser(email, password);
-    if (data) {
-      setUser({ email: data.email, name: data.name });
-      setIsLoggedIn(true);
-    }
-  };
   const signup = async (name: string, email: string, password: string) => {
-    const data = await signupUser(name, email, password);
-    if (data) {
-      setUser({ email: data.email, name: data.name });
-      setIsLoggedIn(true);
+    try {
+      const data = await signupUser(name, email, password);
+      if (data) {
+        setUser({ email: data.email, name: data.name });
+        setIsLoggedIn(true);
+      }
+    } catch (error) {
+      console.error("Error during signup:", error);
+      // Handle signup error, e.g., display an error message
     }
   };
+
   const logout = async () => {
-    await logoutUser();
-    setIsLoggedIn(false);
-    setUser(null);
-    window.location.reload();
+    try {
+      await logoutUser();
+      setIsLoggedIn(false);
+      setUser(null);
+      // Consider alternative approaches for handling navigation or re-rendering components
+    } catch (error) {
+      console.error("Error during logout:", error);
+      // Handle logout error, e.g., display an error message
+    }
   };
 
   const value = {
@@ -74,7 +91,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     logout,
     signup,
   };
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => useContext(AuthContext);

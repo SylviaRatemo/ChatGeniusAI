@@ -26,10 +26,14 @@ const Chat = () => {
       inputRef.current.value = "";
     }
     const newMessage: Message = { role: "user", content };
-    setChatMessages((prev) => [...prev, newMessage]);
-    const chatData = await sendChatRequest(content);
-    setChatMessages([...chatData.chats]);
-    //
+    setChatMessages((prev) => [...prev, newMessage]); // Update state here
+    try {
+      const chatData = await sendChatRequest(content);
+      setChatMessages([...chatData.chats]); // Update state after async call
+    } catch (error) {
+      console.error("Error sending chat:", error);
+      // Handle the error as needed
+    }
   };
   const handleDeleteChats = async () => {
     try {
@@ -43,19 +47,23 @@ const Chat = () => {
     }
   };
   useLayoutEffect(() => {
+    const fetchChats = async () => {
+      try {
+        toast.loading("Loading Chats", { id: "loadchats" });
+        const data = await getUserChats();
+        setChatMessages([...data.chats]);
+        toast.success("Successfully loaded chats", { id: "loadchats" });
+      } catch (error) {
+        console.error("Error loading chats:", error);
+        toast.error("Loading Failed", { id: "loadchats" });
+      }
+    };
+  
     if (auth?.isLoggedIn && auth.user) {
-      toast.loading("Loading Chats", { id: "loadchats" });
-      getUserChats()
-        .then((data) => {
-          setChatMessages([...data.chats]);
-          toast.success("Successfully loaded chats", { id: "loadchats" });
-        })
-        .catch((err) => {
-          console.log(err);
-          toast.error("Loading Failed", { id: "loadchats" });
-        });
+      fetchChats();
     }
   }, [auth]);
+
   useEffect(() => {
     if (!auth?.user) {
       return navigate("/login");

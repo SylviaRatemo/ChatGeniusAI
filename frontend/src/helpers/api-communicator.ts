@@ -1,10 +1,16 @@
 import axios from "axios";
+
+axios.defaults.baseURL = "http://localhost:5000/api/v1";
+axios.defaults.withCredentials = true;
+
+
 export const loginUser = async (email: string, password: string) => {
   const res = await axios.post("/user/login", { email, password });
   if (res.status !== 200) {
     throw new Error("Unable to login");
   }
   const data = await res.data;
+  console.log(data);
   return data;
 };
 
@@ -21,8 +27,8 @@ export const signupUser = async (
   return data;
 };
 
-export const checkAuthStatus = async () => {3
-  const res = await axios.get("/user/auth-status", { headers: { withCredentials: true }});
+export const checkAuthStatus = async () => {
+  const res = await axios.get("/user/auth-status");  
   if (res.status !== 200) {
     throw new Error("Unable to authenticate");
   }
@@ -45,6 +51,7 @@ export const getUserChats = async () => {
     throw new Error("Unable to send chat");
   }
   const data = await res.data;
+  console.log(data);
   return data;
 };
 
@@ -58,10 +65,16 @@ export const deleteUserChats = async () => {
 };
 
 export const logoutUser = async () => {
-  const res = await axios.get("/user/logout");
-  if (res.status !== 200) {
-    throw new Error("Unable to delete chats");
+  try {
+    const res = await axios.get("/user/logout");
+    if (res.status !== 200) {
+      throw new Error("Unable to logout");
+    }
+    const data = await res.data;
+    // Clear authentication token on successful logout
+    // Example: localStorage.removeItem('authToken');
+    return data;
+  } catch (error) {
+    console.error("Error during logout:", error);
   }
-  const data = await res.data;
-  return data;
 };
