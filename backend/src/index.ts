@@ -15,6 +15,7 @@ const PORT = process.env.PORT || 5000;
 connectToDatabase()
 .then(() => {
     app.use(cors(corsOptions));
+    app.options('*', cors({ origin: ["http://127.0.0.1:5173", "http://localhost:5173"], credentials: true }));
     app.use(cookieParser(process.env.COOKIE_SECRET));
     app.use("/api/v1", appRouter);
     app.use((req, res, next) => {

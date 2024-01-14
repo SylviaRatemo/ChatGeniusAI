@@ -11,6 +11,7 @@ export const createToken = (id: string, email: string, expiresIn: string) => {
 };
 
 export const verifyToken = (req: Request, res: Response, next: NextFunction) => {
+  console.log("req");
   const token = req.signedCookies[COOKIE_NAME];
 
   if (!token || !token.trim()) {

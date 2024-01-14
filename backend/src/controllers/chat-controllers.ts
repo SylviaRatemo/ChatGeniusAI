@@ -26,7 +26,7 @@ export const generateChatCompletion = async (
 
     // get latest response
     const chatResponse = await openai.ChatCompletion.create({
-      model: "gpt-4",
+      model: "gpt-3.5-turbo",
       messages: chats,
     });
 
