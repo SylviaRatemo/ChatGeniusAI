@@ -8,3 +8,5 @@ A versatile and intelligent chatbot powered by AI, capable of handling customer 
 
 ![image](https://github.com/SylviaRatemo/ChatGeniusAI/assets/12081174/aa863485-ae6f-40d1-a6f2-8056f3113b59)
 
+![image](https://github.com/SylviaRatemo/ChatGeniusAI/assets/12081174/1d3cf1eb-dfb2-438f-a603-c76a3da5b709)
+
