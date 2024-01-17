@@ -1,86 +1,66 @@
-// import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { Box, Avatar, Typography, Button, IconButton } from "@mui/material";
 import red from "@mui/material/colors/red";
 import { useAuth } from "../context/AuthContext";
-import { IoMdSend } from "react-icons/io";
 import ChatItem from "../components/chat/ChatItem";
-// import { useNavigate } from "react-router-dom";
-// import {
-//   deleteUserChats,
-//   getUserChats,
-//   sendChatRequest,
-// } from "../helpers/api-communicator";
-// import toast from "react-hot-toast";
-// type Message = {
-//   role: "user" | "assistant";
-//   content: string;
-// };
-
-const chatMessages = [
-  {
-    role: "user",
-    content: "Hello, what is your name?",
-  },
-  {
-    role: "assistant",
-    content: "Hello! I'm ChatGPT, a virtual assistant created by OpenAI. I don't have a personal name, but you can call me ChatGPT. How can I assist you today?"
-  },
-  {
-    role: "user",
-    content: "Are you familiar with logging using morgan?",
-  },
-  {
-    role: "assistant",
-    content: "Yes, I'm familiar with Morgan. Morgan is a popular middleware for logging HTTP requests in Node.js applications. It provides a simple way to log information about incoming requests, including details like request method, status code, response time, and more."
-  },
-  {
-    role: "user",
-    content: "What are the benefits of using morgan?",
-  },
-  {
-    role: "assistant",
-    content: "Morgan, as a logging middleware in Node.js applications, offers simplicity and versatility. Its easy integration with Express.js, coupled with predefined log formats like 'combined' and 'dev,' allows for quick adoption and adherence to standard logging practices. The middleware provides valuable insights into each HTTP request, logging details such as request method, URL, response status code, and response time. A key advantage lies in its customization options, enabling developers to tailor log formats according to specific requirements. Morgan seamlessly integrates into the middleware chain, allowing for strategic placement in the request-response lifecycle. With support for streaming logs to different outputs, developers can efficiently manage and analyze logs. Overall, Morgan's widespread use, community support, and ability to enhance debugging and monitoring processes make it a favored choice for logging in Node.js applications."
-  },
-]
-
+import { IoMdSend } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
+import {
+  deleteUserChats,
+  getUserChats,
+  sendChatRequest,
+} from "../helpers/api-communicator";
+import toast from "react-hot-toast";
+type Message = {
+  role: "user" | "assistant";
+  content: string;
+};
 const Chat = () => {
+  const navigate = useNavigate();
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const auth = useAuth();
-
-  // };
-  // const handleDeleteChats = async () => {
-  //   try {
-  //     toast.loading("Deleting Chats", { id: "deletechats" });
-  //     await deleteUserChats();
-  //     setChatMessages([]);
-  //     toast.success("Deleted Chats Successfully", { id: "deletechats" });
-  //   } catch (error) {
-  //     console.log(error);
-  //     toast.error("Deleting chats failed", { id: "deletechats" });
-  //   }
-  // };
-  // useLayoutEffect(() => {
-  //   const fetchChats = async () => {
-  //     try {
-  //       toast.loading("Loading Chats", { id: "loadchats" });
-  //       const data = await getUserChats();
-  //       setChatMessages([...data.chats]);
-  //       toast.success("Successfully loaded chats", { id: "loadchats" });
-  //     } catch (error) {
-  //       console.error("Error loading chats:", error);
-  //       toast.error("Loading Failed", { id: "loadchats" });
-  //     }
-  //   };
-  
-  //   if (auth?.isLoggedIn && auth.user) {
-  //     fetchChats();
-  //   }
-  // }, [auth]);
-
-  // useEffect(() => {
-  //   if (!auth?.user) {
-  //     return navigate("/login");
-  //   }
-  // }, [auth]);
+  const [chatMessages, setChatMessages] = useState<Message[]>([]);
+  const handleSubmit = async () => {
+    const content = inputRef.current?.value as string;
+    if (inputRef && inputRef.current) {
+      inputRef.current.value = "";
+    }
+    const newMessage: Message = { role: "user", content };
+    setChatMessages((prev) => [...prev, newMessage]);
+    const chatData = await sendChatRequest(content);
+    setChatMessages([...chatData.chats]);
+    //
+  };
+  const handleDeleteChats = async () => {
+    try {
+      toast.loading("Deleting Chats", { id: "deletechats" });
+      await deleteUserChats();
+      setChatMessages([]);
+      toast.success("Deleted Chats Successfully", { id: "deletechats" });
+    } catch (error) {
+      console.log(error);
+      toast.error("Deleting chats failed", { id: "deletechats" });
+    }
+  };
+  useLayoutEffect(() => {
+    if (auth?.isLoggedIn && auth.user) {
+      toast.loading("Loading Chats", { id: "loadchats" });
+      getUserChats()
+        .then((data) => {
+          setChatMessages([...data.chats]);
+          toast.success("Successfully loaded chats", { id: "loadchats" });
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error("Loading Failed", { id: "loadchats" });
+        });
+    }
+  }, [auth]);
+  useEffect(() => {
+    if (!auth?.user) {
+      return navigate("/login");
+    }
+  }, [auth]);
   return (
     <Box
       sx={{
@@ -119,13 +99,8 @@ const Chat = () => {
               fontWeight: 700,
             }}
           >
-            {auth?.user?.name && (
-              <>
-                {auth.user.name[0]}
-                {auth.user.name.split(" ")[1]?.[0]}
-              </>
-            )}
-
+            {/* {auth?.user?.name[0]}
+            {auth?.user?.name.split(" ")[1][0]} */}
           </Avatar>
           <Typography sx={{ mx: "auto", fontFamily: "work sans" }}>
             You are talking to a ChatBOT
@@ -135,7 +110,7 @@ const Chat = () => {
             Education, etc. But avoid sharing personal information
           </Typography>
           <Button
-            //onClick={handleDeleteChats}
+            onClick={handleDeleteChats}
             sx={{
               width: "200px",
               my: "auto",
@@ -187,7 +162,7 @@ const Chat = () => {
           }}
         >
           {chatMessages.map((chat, index) => (
-          <ChatItem content={chat.content} role={chat.role} key={index} />
+            <ChatItem content={chat.content} role={chat.role} key={index} />
           ))}
         </Box>
         <div
@@ -201,7 +176,7 @@ const Chat = () => {
         >
           {" "}
           <input
-            //ref={inputRef}
+            ref={inputRef}
             type="text"
             style={{
               width: "100%",
@@ -213,9 +188,7 @@ const Chat = () => {
               fontSize: "20px",
             }}
           />
-          <IconButton 
-          //onClick={handleSubmit} 
-          sx={{ color: "white", mx: 1 }}>
+          <IconButton onClick={handleSubmit} sx={{ color: "white", mx: 1 }}>
             <IoMdSend />
           </IconButton>
         </div>
