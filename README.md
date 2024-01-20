@@ -16,7 +16,7 @@ git clone https://github.com/SylviaRatemo/ChatGeniusAI
 cd ChatGeniusAI
 ```
 
-## Build the Project (ensure you have the latest node version)
+## Build the Project (ensure you have the latest node.js)
 - In one terminal;
 ```bash
 cd backend
