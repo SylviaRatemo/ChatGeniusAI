@@ -1,38 +1,35 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const mongoose_1 = __importDefault(require("mongoose"));
-const crypto_1 = require("crypto");
-const chatSchema = new mongoose_1.default.Schema({
+exports.__esModule = true;
+var mongoose_1 = require("mongoose");
+var crypto_1 = require("crypto");
+var chatSchema = new mongoose_1["default"].Schema({
     id: {
         type: String,
-        default: (0, crypto_1.randomUUID)(),
+        "default": crypto_1.randomUUID
     },
     role: {
         type: String,
-        required: true,
+        required: true
     },
     content: {
         type: String,
-        required: true,
-    },
+        required: true
+    }
 });
-const userSchema = new mongoose_1.default.Schema({
+var userSchema = new mongoose_1["default"].Schema({
     name: {
         type: String,
-        required: true,
+        required: true
     },
     email: {
         type: String,
         required: true,
-        unique: true,
+        unique: true
     },
     password: {
         type: String,
-        required: true,
+        required: true
     },
-    chats: [chatSchema],
+    chats: [chatSchema]
 });
-exports.default = mongoose_1.default.model("User", userSchema);
+exports["default"] = mongoose_1["default"].model("User", userSchema);

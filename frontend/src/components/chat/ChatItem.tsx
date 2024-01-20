@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Avatar, Typography } from "@mui/material";
-import { useAuth } from "../../context/AuthContext";
+//import { useAuth } from "../../context/AuthContext";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { coldarkDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 
@@ -34,7 +34,7 @@ const ChatItem = ({
   role: "user" | "assistant";
 }) => {
   const messageBlocks = extractCodeFromString(content);
-  const auth = useAuth();
+  //const auth = useAuth();
   return role == "assistant" ? (
     <Box
       sx={{
@@ -77,8 +77,8 @@ const ChatItem = ({
       }}
     >
       <Avatar sx={{ ml: "0", bgcolor: "black", color: "white" }}>
-        {auth?.user?.name[0]}
-        {auth?.user?.name.split(" ")[1][0]}
+        {/* {auth?.user?.name[0]}
+        {auth?.user?.name.split(" ")[1][0]} */}
       </Avatar>
       <Box>
         {!messageBlocks && (

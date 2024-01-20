@@ -17,23 +17,42 @@ export const generateChatCompletion = async (
         .json({ message: "User not registered OR Token malfunctioned" });
 
     // grab chats of user
-    const chats = user.chats.map(({ role, content }) => ({ role, content }));
-    chats.push({ content: message, role: "user" });
+    const userChats = user.chats.map(({ role, content }) => ({ role, content }));
+    const newUserMessage = { role: "user", content: message };
+    const chats = [...userChats, newUserMessage];
 
     // send all chats with new one to OpenAI API
     const config = configureOpenAI();
     const openai = new OpenAI(config);
 
     // get latest response
-    const chatResponse = await openai.ChatCompletion.create({
+    const chatResponse = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       messages: chats,
     });
 
-    for (const responseMessage of chatResponse.Choices[0].messages) {
-      user.chats.push(responseMessage);
+    if (
+      chatResponse.choices &&
+      chatResponse.choices[0] &&
+      chatResponse.choices[0].message &&
+      chatResponse.choices[0].message.content
+    ) {
+      const responseMessage = {
+        role: "assistant",
+        content: chatResponse.choices[0].message.content,
+      };
+      user.chats.push(newUserMessage, responseMessage);
+      user.markModified('chats');
+      await user.save();
+      return res.status(200).json({
+        prompt: newUserMessage,
+        response: responseMessage,
+        chats: user.chats 
+      });
+    } else {
+      console.error('Invalid chatResponse structure:', chatResponse);
+      // Handle the case where the expected structure is not present
     }
-    await user.save();
     return res.status(200).json({ chats: user.chats });
   } catch (error) {
     console.log(error);
