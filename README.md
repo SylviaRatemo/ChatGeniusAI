@@ -6,7 +6,7 @@ A versatile and intelligent chatbot powered by AI, capable of handling customer 
 MongoDB + Express.js + React + Node.js (MERN stack)
 
 - Backend: MongoDB + Express.js + Node.js
-- Frontend: React + TypeScript + Vite
+- Frontend: React + TypeScript + Vite JS
 
 # Contributing
 
